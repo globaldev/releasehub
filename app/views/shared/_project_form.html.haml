@@ -50,6 +50,14 @@
             %input{:type => "checkbox", :required => ""}/
         .help-block.with-errors
 
+    .form-group
+      %label.col-sm-3.control-label{:for => "Sanity"} Is this a sanity check?
+      .col-sm-7
+        .checkbox
+          %label
+            %input{:type => "checkbox", :required => ""}/
+        .help-block.with-errors
+
 :javascript
   $(document).ready(function(){
     $('[data-toggle="tooltip"]').tooltip();
