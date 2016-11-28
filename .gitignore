@@ -17,7 +17,6 @@
 /tmp
 
 /config/*.env
-/config/*.env.example
 
 ngrok
 
