@@ -63,13 +63,15 @@ class DeploymentsController < ApplicationController
   end
 
   def update_status
-    @deployment = Deployment.includes(:status).find(params["deployment_id"])
+    @deployment = Deployment.includes(:status, :environment, projects: [branch: [:repository]]).find(params["deployment_id"])
     last_operator = @deployment.last_operator.try(:username)
 
     if last_operator && current_username != last_operator && @deployment.status_id != Status::WAIT_TO_DEPLOY
       result = { error: "The deployment is currently #{@deployment.status.name} by #{last_operator}" }
     else
+      previous_status = @deployment.status_id
       @deployment.update(status_id: params["status_id"])
+
       # record the operations
       OperationLog.create!(username: current_username, status_id: params["status_id"],
         deployment_id: params["deployment_id"])
@@ -78,6 +80,13 @@ class DeploymentsController < ApplicationController
         ops: current_username, next_status: @deployment.status.next,
         disable: @deployment.status.next.nil?
       }
+      case @deployment.status_id
+      when Status::DEPLOYING
+        attach_deployment_tags(@deployment, current_user)
+      when Status::CANCELLED
+        detach_deployment_tags(@deployment) if previous_status == Status::DEPLOYING
+      end
+
       notify
     end
 
