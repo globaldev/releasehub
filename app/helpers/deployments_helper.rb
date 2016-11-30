@@ -1,6 +1,7 @@
 module DeploymentsHelper
   DEFAULT_NOTIFY_IDS = ENV["DEFAULT_NOTIFY_IDS"]
   DEFAULT_CHANNEL = ENV["DEFAULT_CHANNEL"]
+  USER_EMAIL_DOMAIN = ENV["RH_USER_EMAIL_DOMAIN"]
 
   def attach_deployment_tags(deployment, ops)
     if deployment.environment.production?
@@ -45,7 +46,7 @@ module DeploymentsHelper
     object_sha = project.sha
     message = "#{project.branch.name}\n"
     tagger_name = ops.name
-    tagger_email = "#{ops.slack_username}@venntro.com"
+    tagger_email = "#{ops.slack_username}@#{USER_EMAIL_DOMAIN}"
     tagger_date = Time.now.utc.iso8601
 
     tag_params = [
