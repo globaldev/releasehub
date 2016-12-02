@@ -89,6 +89,6 @@ module DeploymentsHelper
   end
 
   def tag_ref(name)
-    "refs/tags/#{name}"
+    "tags/#{name}"
   end
 end
