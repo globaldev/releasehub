@@ -45,7 +45,7 @@ module DeploymentsHelper
   def create_annotated_tag(tag_name, project, ops)
     object_sha = project.sha
     message = "#{project.branch.name}\n"
-    tagger_name = ops.name
+    tagger_name = ops.name || "Ops"
     tagger_email = "#{ops.slack_username}@#{USER_EMAIL_DOMAIN}"
     tagger_date = Time.now.utc.iso8601
 
