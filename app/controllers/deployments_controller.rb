@@ -36,7 +36,7 @@ class DeploymentsController < ApplicationController
       end
 
       flash[:success] = "Thank you, the request has been submitted. It should be deployed shortly."
-      pusher_new_deployment
+      #pusher_new_deployment
       notify
     else
       flash[:danger] = "Branch must be master for production release."
@@ -80,11 +80,12 @@ class DeploymentsController < ApplicationController
         ops: current_username, next_status: @deployment.status.next,
         disable: @deployment.status.next.nil?
       }
+
       case @deployment.status_id
       when Status::DEPLOYING
-        attach_deployment_tags(@deployment, current_user)
+        @deployment.attach_deployment_tags(current_user, client)
       when Status::CANCELLED
-        detach_deployment_tags(@deployment) if previous_status == Status::DEPLOYING
+        @deployment.detach_deployment_tags(client) if previous_status == Status::DEPLOYING
       end
 
       notify

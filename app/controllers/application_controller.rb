@@ -9,7 +9,6 @@ class ApplicationController < ActionController::Base
   include ReleasesHelper
   include DashboardHelper
   include SlackHelper
-  include DeploymentsHelper
 
   before_action :require_authentication
   before_action :new_deployment_count
