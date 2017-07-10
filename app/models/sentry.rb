@@ -21,4 +21,12 @@ class Sentry
         headers: HEADERS
     )
   end
+
+  def self.delete_release(id)
+    base_uri = "#{SENTRY_API_URI}releases/#{id}/"
+    HTTParty.delete(
+        base_uri,
+        headers: HEADERS
+    )
+  end
 end

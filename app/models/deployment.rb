@@ -78,6 +78,12 @@ class Deployment < ActiveRecord::Base
     end
   end
 
+  def rollback_sentry_release
+    projects.each do |project|
+      Sentry.delete_release(project.sha)
+    end
+  end
+
   private
 
   def create_annotated_tag(project, ops)
