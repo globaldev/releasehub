@@ -62,6 +62,22 @@ class Deployment < ActiveRecord::Base
     end
   end
 
+  def attach_sentry_release
+    projects.each do |project|
+      if !Sentry.get_release(project.sha).success?
+        url = "https://github.com/#{ENV["ORGANISATION"]}/#{project.repository.name}/commit/#{project.sha}"
+        body = {
+          version: project.sha,
+          ref: project.sha,
+          url: url,
+          commits: [{id: project.sha, message: project.deployment.release.summary}],
+          projects: [project.repository.name]
+        }
+        Sentry.create_release(body)
+      end
+    end
+  end
+
   private
 
   def create_annotated_tag(project, ops)
