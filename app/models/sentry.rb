@@ -29,4 +29,13 @@ class Sentry
         headers: HEADERS
     )
   end
+
+  def self.deploy_release(body, id)
+    base_uri = "#{SENTRY_API_URI}releases/#{id}/deploys/"
+    HTTParty.post(
+        base_uri,
+        body: body.to_json,
+        headers: HEADERS
+    )
+  end
 end

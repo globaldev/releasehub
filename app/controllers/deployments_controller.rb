@@ -86,6 +86,7 @@ class DeploymentsController < ApplicationController
         @deployment.attach_deployment_tags(current_user, client)
       when Status::DEPLOYED
         @deployment.attach_sentry_release
+        @deployment.attach_sentry_deploy
       when Status::ROLLBACK
         @deployment.rollback_sentry_release
       when Status::CANCELLED

@@ -78,6 +78,18 @@ class Deployment < ActiveRecord::Base
     end
   end
 
+  def attach_sentry_deploy
+    projects.each do |project|
+      if Sentry.get_release(project.sha).success?
+        body = {
+          environment: environment.name,
+          name: project.deployment.release.summary
+        }
+        Sentry.deploy_release(body, project.sha)
+      end
+    end
+  end
+
   def rollback_sentry_release
     projects.each do |project|
       Sentry.delete_release(project.sha)
@@ -104,23 +116,23 @@ class Deployment < ActiveRecord::Base
       tagger_date
     ]
 
-    api_client.create_tag(*tag_params)
+    # api_client.create_tag(*tag_params)
   end
 
   def create_annotated_tag_reference(tag_sha, repo_name)
-    api_client.create_ref(repo(repo_name), tag_ref, tag_sha)
+    # api_client.create_ref(repo(repo_name), tag_ref, tag_sha)
   end
 
   def update_annotated_tag_reference(tag_sha, repo_name)
-    api_client.update_ref(repo(repo_name), tag_ref, tag_sha)
+    # api_client.update_ref(repo(repo_name), tag_ref, tag_sha)
   end
 
   def delete_annotated_tag_reference(repo_name)
-    api_client.delete_ref(repo(repo_name), tag_ref)
+    # api_client.delete_ref(repo(repo_name), tag_ref)
   end
 
   def annotated_tag_referenced?(repo_name)
-    api_client.ref(repo(repo_name), tag_ref)
+    # api_client.ref(repo(repo_name), tag_ref)
     true
   rescue ::Octokit::NotFound
     return false
