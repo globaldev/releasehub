@@ -64,7 +64,7 @@ class Deployment < ActiveRecord::Base
 
   def attach_sentry_release
     projects.each do |project|
-      if !Sentry.get_release(project.sha).success?
+      if !Services::Sentry::Release.get(project.sha).success?
         url = "https://github.com/#{ENV["ORGANISATION"]}/#{project.repository.name}/commit/#{project.sha}"
         body = {
           version: project.sha,
@@ -73,26 +73,26 @@ class Deployment < ActiveRecord::Base
           commits: [{id: project.sha, message: project.deployment.release.summary}],
           projects: [project.repository.name]
         }
-        Sentry.create_release(body)
+        Services::Sentry::Release.create(body)
       end
     end
   end
 
   def attach_sentry_deploy
     projects.each do |project|
-      if Sentry.get_release(project.sha).success?
+      if Services::Sentry::Release.get(project.sha).success?
         body = {
           environment: environment.name,
           name: project.deployment.release.summary
         }
-        Sentry.deploy_release(body, project.sha)
+        Services::Sentry::Release.deploy(body, project.sha)
       end
     end
   end
 
   def rollback_sentry_release
     projects.each do |project|
-      Sentry.delete_release(project.sha)
+      Services::Sentry::Release.delete(project.sha)
     end
   end
 
@@ -116,23 +116,23 @@ class Deployment < ActiveRecord::Base
       tagger_date
     ]
 
-    # api_client.create_tag(*tag_params)
+    api_client.create_tag(*tag_params)
   end
 
   def create_annotated_tag_reference(tag_sha, repo_name)
-    # api_client.create_ref(repo(repo_name), tag_ref, tag_sha)
+    api_client.create_ref(repo(repo_name), tag_ref, tag_sha)
   end
 
   def update_annotated_tag_reference(tag_sha, repo_name)
-    # api_client.update_ref(repo(repo_name), tag_ref, tag_sha)
+    api_client.update_ref(repo(repo_name), tag_ref, tag_sha)
   end
 
   def delete_annotated_tag_reference(repo_name)
-    # api_client.delete_ref(repo(repo_name), tag_ref)
+    api_client.delete_ref(repo(repo_name), tag_ref)
   end
 
   def annotated_tag_referenced?(repo_name)
-    # api_client.ref(repo(repo_name), tag_ref)
+    api_client.ref(repo(repo_name), tag_ref)
     true
   rescue ::Octokit::NotFound
     return false
