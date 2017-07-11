@@ -63,6 +63,7 @@ class Deployment < ActiveRecord::Base
   end
 
   def attach_sentry_release
+    return unless environment.production?
     projects.each do |project|
       if !Services::Sentry::Release.get(project.sha).success?
         url = "https://github.com/#{ENV["ORGANISATION"]}/#{project.repository.name}/commit/#{project.sha}"
@@ -79,6 +80,7 @@ class Deployment < ActiveRecord::Base
   end
 
   def attach_sentry_deploy
+    return unless environment.production?
     projects.each do |project|
       if Services::Sentry::Release.get(project.sha).success?
         body = {
@@ -91,6 +93,7 @@ class Deployment < ActiveRecord::Base
   end
 
   def rollback_sentry_release
+    return unless environment.production?
     projects.each do |project|
       Services::Sentry::Release.delete(project.sha)
     end
