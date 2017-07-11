@@ -62,6 +62,40 @@ class Deployment < ActiveRecord::Base
     end
   end
 
+  def attach_sentry_release
+    projects.each do |project|
+      if !Services::Sentry::Release.get(project.sha).success?
+        url = "https://github.com/#{ENV["ORGANISATION"]}/#{project.repository.name}/commit/#{project.sha}"
+        body = {
+          version: project.sha,
+          ref: project.sha,
+          url: url,
+          commits: [{id: project.sha, message: project.deployment.release.summary}],
+          projects: [project.repository.name]
+        }
+        Services::Sentry::Release.create(body)
+      end
+    end
+  end
+
+  def attach_sentry_deploy
+    projects.each do |project|
+      if Services::Sentry::Release.get(project.sha).success?
+        body = {
+          environment: environment.name,
+          name: project.deployment.release.summary
+        }
+        Services::Sentry::Release.deploy(body, project.sha)
+      end
+    end
+  end
+
+  def rollback_sentry_release
+    projects.each do |project|
+      Services::Sentry::Release.delete(project.sha)
+    end
+  end
+
   private
 
   def create_annotated_tag(project, ops)

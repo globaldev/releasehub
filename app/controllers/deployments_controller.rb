@@ -84,6 +84,11 @@ class DeploymentsController < ApplicationController
       case @deployment.status_id
       when Status::DEPLOYING
         @deployment.attach_deployment_tags(current_user, client)
+      when Status::DEPLOYED
+        @deployment.attach_sentry_release
+        @deployment.attach_sentry_deploy
+      when Status::ROLLBACK
+        @deployment.rollback_sentry_release
       when Status::CANCELLED
         @deployment.detach_deployment_tags(client) if previous_status == Status::DEPLOYING
       end

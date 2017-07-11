@@ -34,5 +34,7 @@ module DevelopmentTracker
 
     config.time_zone = "London"
     config.active_record.default_timezone = :local
+
+    config.autoload_paths += %W(#{config.root}/lib)
   end
 end
