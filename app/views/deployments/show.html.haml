@@ -70,6 +70,9 @@
 
         %label Rollback Instruction
         %p= markdown.render(project.rollback_instruction).html_safe
+
+        %label Run Jenkins
+        %p= @deployment.jenkins
         %hr
 
         %label Deployment Order
@@ -78,10 +81,31 @@
 
 :javascript
   $(document).ready(function(){
+    function runJenkins() {
+      $.ajax({
+          url: "http://192.168.50.151:8080/crumbIssuer/api/json",
+          contentType: "application/json",
+          crossDomain: true,
+          beforeSend: function(xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + btoa("peek:5bf37a09ff95862d372bd714dedb08c6"));
+          }
+      }).done(function(data) {
+          // this is how you fetch valid & actual CSRF crumb
+          console.log(data.crumbRequestField + " = " + data.crumb);
+      }).fail(function(jqXHR, textStatus, errorThrown) {
+        console.log("blah");
+        console.log(jqXHR);
+      });
+    };
+
     $("select[name='status']").change(function() {
       var status_id = $(this).val();
       var btn = $('.next-status');
       var disable;
+
+      if(status_id == 3) {
+        runJenkins();
+      }
       $.post("/deployment_update_status",
         { status_id : status_id, deployment_id : #{@deployment.id}},
         function(response){
@@ -109,6 +133,22 @@
       var btn = $(this);
       var disable;
 
+      if(status_id == 3) {
+        runJenkins();
+        // $.get({
+        //     url: "http://192.168.50.151:8080/crumbIssuer/api/xml",
+        //     beforeSend: function(xhr) {
+        //       xhr.setRequestHeader("Authorization", "Basic " + btoa("peek:5bf37a09ff95862d372bd714dedb08c6"));
+        //     },
+        //     contentType: "application/json"
+
+        // }).done(function(data) {
+        //     console.log(data.crumbRequestField + " = " + data.crumb);
+        // });
+
+
+      }
+
       $.post("/deployment_update_status",
         { status_id : status_id, deployment_id : #{@deployment.id}},
         function(response){
@@ -128,4 +168,6 @@
       .always(function() { l.stop(); btn.prop("disabled", disable); });
       return false;
     });
+
+
   });

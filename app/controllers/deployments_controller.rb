@@ -142,6 +142,7 @@ class DeploymentsController < ApplicationController
     {
       notification_list: params["deployment"]["notification_list"],
       environment_id: params["deployment"]["environment_id"],
+      jenkins: params["deployment"]["jenkins"],
       status_id: Status::WAIT_TO_DEPLOY,
       dev: current_username
     }
@@ -173,10 +174,10 @@ class DeploymentsController < ApplicationController
   end
 
   def pusher_new_deployment
-    Pusher.trigger("releasehub_channel", "new_deployment", {
-      message: "##{@deployment.id} (#{@deployment.release.name}) submitted to #{@deployment.environment.name}",
-      unread_count: Deployment.where(:status_id => Status::WAIT_TO_DEPLOY).count,
-      url: deployment_url(@deployment)
-    })
+    # Pusher.trigger("releasehub_channel", "new_deployment", {
+    #   message: "##{@deployment.id} (#{@deployment.release.name}) submitted to #{@deployment.environment.name}",
+    #   unread_count: Deployment.where(:status_id => Status::WAIT_TO_DEPLOY).count,
+    #   url: deployment_url(@deployment)
+    # })
   end
 end

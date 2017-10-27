@@ -37,6 +37,19 @@
           %option{:value => environment.id, :selected => @deployment.environment_id == environment.id ? "selected" : nil}= environment.name
       .help-block.with-errors
 
+  .form-group.jenkins
+    %label.com-sm-3.control-label{:for => "jenkins"} Auto-run Jenkins
+    .col-sm-2
+      .radio
+        %label
+          %input{name: "deployment[jenkins]", type: "radio", value: 1, id: "yes", :required => ""}
+          Yes
+      .radio
+        %label
+          %input{name: "deployment[jenkins]", type: "radio", value: 0}
+          No
+      .help-block.with-errors
+
   .form-group
     %label.col-sm-3.control-label{:for => "notification_list"} Notify
     .col-sm-5
@@ -87,6 +100,7 @@
       var selected_text = $('select.environment option:selected').text();
       setDefaultNotify(selected_text, '#{DeploymentsHelper::DEFAULT_CHANNEL}', '#{DeploymentsHelper::DEFAULT_NOTIFY_IDS}');
       if (selected_text == 'production') {
+        $('.jenkins #yes').prop('checked', true);
         $('#app-area .projects-wrap .repository').each(function(index){
           doneTyping($(this));
         });
@@ -103,19 +117,7 @@
       matcher: typeahead_matcher
     });
 
-    $('input.notify.typeahead').typeahead({
-      source: #{slack_notify_list},
-      autoSelect: true,
-      limit: 10,
-      updater: function(item){
-        array = this.query.split(",");
-        array = array.slice(0, array.length - 1);
-        array.push(item.name);
-        query = array.join();
-        return { name: query };
-      },
-      matcher: typeahead_matcher
-    });
+
 
     $('.branch').each(function() {
       set_branch_name($(this));

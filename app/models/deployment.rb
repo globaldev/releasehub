@@ -3,6 +3,7 @@ class Deployment < ActiveRecord::Base
   validates :status_id, presence: true
   validates :environment_id, presence: true
   validates :dev, presence: true
+  validates :jenkins, presence: true
 
   belongs_to :release
   belongs_to :status

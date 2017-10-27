@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161214173338) do
+ActiveRecord::Schema.define(version: 20171024150308) do
 
   create_table "branches", force: :cascade do |t|
     t.integer  "repository_id", limit: 4
@@ -29,6 +29,7 @@ ActiveRecord::Schema.define(version: 20161214173338) do
     t.string   "dev",               limit: 255
     t.datetime "created_at",                    null: false
     t.datetime "updated_at",                    null: false
+    t.integer  "jenkins",           limit: 3
   end
 
   add_index "deployments", ["created_at"], name: "index_deployments_on_created_at", using: :btree
