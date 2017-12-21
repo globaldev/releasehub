@@ -12,6 +12,8 @@ class Deployment < ActiveRecord::Base
 
   NOTIFY_STATUS = Set[Status::DEPLOYED, Status::ROLLBACK]
 
+  after_update :update_ansible_db
+
   def repo_names
     projects.map { |project| project.repository.name }.join(",")
   end
@@ -22,5 +24,19 @@ class Deployment < ActiveRecord::Base
 
   def last_operator
     operation_logs.last
+  end
+
+  def update_ansible_db
+    if status.id == Status::DEPLOYING
+      projects.each do |project|
+        Ansible.update_sha(environment, project.repository.name, project.sha)
+      end
+    end
+
+    if status.id == Status::ROLLBACK
+      projects.each do |project|
+        Ansible.rollback_sha(environment, project.repository.name)
+      end
+    end
   end
 end
