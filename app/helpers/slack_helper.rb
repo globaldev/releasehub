@@ -26,11 +26,19 @@ module SlackHelper
     Rails.cache.fetch("slack_notify_list", :expires_in => 1.day) do
       uri = URI.parse(SLACK_USER_LIST_URL)
       res = Net::HTTP.post_form(uri, "token" => SLACK_TOKEN)
-      users = JSON.parse(res.body)["members"].map{ |member| {"name" => "@#{member["name"]}"} }
+      if res.body.empty?
+        users = []
+      else
+        users = JSON.parse(res.body)["members"].map{ |member| {"name" => "@#{member["name"]}"} }
+      end
 
       uri = URI.parse(SLACK_CHANNEL_LIST_URL)
       res = Net::HTTP.post_form(uri, "token" => SLACK_TOKEN, "exclude_archived" => 1)
-      channels = JSON.parse(res.body)["channels"].map{ |channel| {"name" => "##{channel["name"]}"} }
+      if res.body.empty?
+        channels = []
+      else
+        channels = JSON.parse(res.body)["channels"].map{ |channel| {"name" => "##{channel["name"]}"} }
+      end
 
       (users + channels).to_json
     end

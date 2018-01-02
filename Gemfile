@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "rails", "4.2.5.1"
+gem "rails", "~> 4.2"
 gem "bootstrap-sass", "~> 3.3.6"
 gem "sass-rails"
 gem "uglifier"
@@ -23,7 +23,7 @@ gem "pusher"
 group :development, :test do
   gem "byebug"
   gem "rspec-rails"
-  gem "factory_girl_rails"
+  gem "factory_bot_rails"
 end
 
 group :test do

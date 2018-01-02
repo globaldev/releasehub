@@ -1,5 +1,5 @@
 require "webmock/rspec"
-require "factory_girl"
+require "factory_bot"
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
@@ -28,5 +28,5 @@ RSpec.configure do |config|
   config.disable_monkey_patching!
 
   config.order = :random
-  config.include FactoryGirl::Syntax::Methods
+  config.include FactoryBot::Syntax::Methods
 end

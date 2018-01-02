@@ -41,7 +41,8 @@ RSpec.describe DeploymentsController, type: :controller do
         "shas" => branches.map { SecureRandom.hex },
         "deployment_instructions" => branches.map { "fake deploy" },
         "rollback_instructions" => branches.map { "fake rollback" },
-        "branch_names" => branches.map { |branch| branch.name }
+        "branch_names" => branches.map { |branch| branch.name },
+        "deployment_orders" => (0..branches.size).to_a
       }
     end
     let(:params) do
@@ -60,6 +61,7 @@ RSpec.describe DeploymentsController, type: :controller do
       before do
         create(:status, :id => Status::WAIT_TO_DEPLOY)
         allow(controller).to receive(:slack_post).and_return("message posted")
+        expect(Pusher).to receive(:trigger)
         post :create, params
       end
 
@@ -91,7 +93,7 @@ RSpec.describe DeploymentsController, type: :controller do
       before { xhr :post, :update_status, data }
 
       it "returns status colour and name of status" do
-        expect(response.body).to eq(%Q{{"name":"#{status.name}","colour":null,"ops":"#{current_username}"}})
+        expect(response.body).to eq(%Q{{"name":"#{status.name}","colour":null,"ops":"#{current_username}","next_status":null,"disable":true}})
       end
     end
   end

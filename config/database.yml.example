@@ -1,0 +1,50 @@
+default: &default
+  adapter: mysql2
+  encoding: utf8
+  database: releasehub
+  pool: 5
+  username: root
+  timeout: 5000
+  host: localhost
+
+development:
+  <<: *default
+  database: releasehub
+
+test:
+  <<: *default
+  database: releasehub_test
+
+ansible: &ansible
+  adapter: mysql2
+  encoding: utf8
+  database: ansible
+  pool: 5
+  username: root
+  timeout: 5000
+  host: localhost
+
+ansible_qa1:
+  <<: *ansible
+  host: localhost
+ansible_qa2:
+  <<: *ansible
+  host: localhost
+ansible_qa3:
+  <<: *ansible
+  host: localhost
+ansible_qa4:
+  <<: *ansible
+  host: localhost
+ansible_qa5:
+  <<: *ansible
+  host: localhost
+ansible_uat1:
+  <<: *ansible
+  host: localhost
+ansible_uat2:
+  <<: *ansible
+  host: localhost
+ansible_production:
+  <<: *ansible
+  host: localhost

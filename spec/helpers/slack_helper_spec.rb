@@ -3,13 +3,12 @@ require "rails_helper"
 RSpec.describe SlackHelper, type: :helper do
   describe "#slack_notify_list" do
     before do
-      Rails.cache.clear
       ENV["SLACK_TOKEN"] = "token"
-      stub_request(:post, "https://slack.com/api/users.list").with(:body => {"token"=>true}).
-        to_return(:status => 200, :body => '{"members":[{"name":"release"},{"name":"hub"}]}')
+      Rails.cache.clear
+      stub_request(:post, "https://slack.com/api/users.list").
+         to_return(status: 200, body: '{"members":[{"name":"release"},{"name":"hub"}]}', headers: {})
 
       stub_request(:post, "https://slack.com/api/channels.list").
-        with(:body => {"exclude_archived"=>"1", "token"=>true}).
         to_return(:status => 200, :body => '{"channels":[{"name":"release"},{"name":"hub"}]}')
     end
 

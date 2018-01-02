@@ -33,7 +33,7 @@ RSpec.describe ReleasesController, type: :controller do
       let(:active_branches) { repository_with_branches.branches.take(2) }
 
       before do
-        stub_request(:get, "https://api.github.com/repos/#{repository_with_branches.name}/branches?per_page=100").
+        stub_request(:get, "https://api.github.com/repos/organisation/#{repository_with_branches.name}/branches?per_page=100").
           to_return(:status => 200, :body => active_branches)
         xhr :post, :get_branches, { "repository" => repository_with_branches.name, "type" => "sync" }
       end
@@ -47,7 +47,7 @@ RSpec.describe ReleasesController, type: :controller do
   describe "#get_sha" do
    context "when branch is empty" do
       before do
-        stub_request(:get, "https://api.github.com/repos/#{repository.name}/branches/").
+        stub_request(:get, "https://api.github.com/repos/organisation/#{repository.name}/branches/").
          to_return(:status => 404, :body => "")
         xhr :post, :get_sha, { "repository" => repository.name, "branch" => "" }
       end
