@@ -9,7 +9,7 @@ RSpec.describe ReleasesHelper, type: :helper do
     let(:release_url) { "https://test.host#{release_path(deployment.release)}" }
     let(:text) do
       "<#{deploy_url}|##{deployment.id}> (<#{release_url}|#{deployment.release.name}>) " \
-      "#{deployment.status.name} to #{deployment.environment.name} by @#{current_username}"
+      "#{deployment.status.name} to #{deployment.environment.name} by #{current_username}"
     end
     let(:expected_message) do
       [{
@@ -44,7 +44,7 @@ RSpec.describe ReleasesHelper, type: :helper do
     context "when not to notify people" do
       let(:text) do
         "<#{deploy_url}|##{deployment.id}> (<#{release_url}|#{deployment.release.name}>) " \
-        "#{deployment.status.name} to #{deployment.environment.name} by @#{current_username} for @#{deployment.dev}"
+        "#{deployment.status.name} to #{deployment.environment.name} by #{current_username} for @#{deployment.dev}"
       end
       let(:fields) do
         [
@@ -58,10 +58,7 @@ RSpec.describe ReleasesHelper, type: :helper do
     end
 
     context "when notify people" do
-      let(:text) do
-        "<#{deploy_url}|##{deployment.id}> (<#{release_url}|#{deployment.release.name}>) " \
-        "#{deployment.status.name} to #{deployment.environment.name} by @#{current_username} for @#{deployment.dev}"
-      end
+      let(:current_username) { deployment.dev }
       let(:fields) do
         [
           { title: "Projects", value: project_names, short: true },

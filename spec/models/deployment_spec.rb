@@ -50,9 +50,11 @@ RSpec.describe Deployment, type: :model do
       end
     end
     let(:projects) do
+      i = 0
       branches.map do |branch|
+        i += 1
         Project.create!(:sha => "1234", :deployment_id => deployment.id,
-          :branch_id => branch.id, :deployment_order => deployment_order.id)
+          :branch_id => branch.id, :deployment_order => i)
       end
     end
 
