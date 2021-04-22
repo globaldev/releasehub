@@ -30,8 +30,18 @@ module SlackHelper
       users = JSON.parse(res.body)["members"].map{ |member| {"name" => "@#{member["name"]}"} }
 
       uri = URI.parse(SLACK_CHANNEL_LIST_URL)
-      res = Net::HTTP.post_form(uri, "token" => SLACK_TOKEN, "exclude_archived" => 1, "types" => SLACK_CHANNEL_TYPES)
-      channels = JSON.parse(res.body)["channels"].map{ |channel| {"name" => "##{channel["name"]}"} }
+
+      channels = []
+      next_cursor = nil
+      loop do
+        payload = {"token" => SLACK_TOKEN, "exclude_archived" => 1, "types" => SLACK_CHANNEL_TYPES, "limit" => 1000}
+        payload.merge!({"cursor" => next_cursor}) unless next_cursor.nil?
+        res = Net::HTTP.post_form(uri, payload)
+        channel_data = JSON.parse(res.body)
+        channels += channel_data["channels"].map{ |channel| {"name" => "##{channel["name"]}"} }
+        next_cursor = channel_data["response_metadata"]["next_cursor"] rescue nil
+        break if next_cursor.nil? || next_cursor == ""
+      end
 
       (users + channels).to_json
     end
